@@ -12,12 +12,12 @@ Usage:       [IMPORTANT: This script will need your API KEY and an OAauth client
              http://johnnythetank.github.io/youtube-channel-name-converter/
 """
 
-import datetime
 import json
 import sys
 import time
 import requests
 
+from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
@@ -33,7 +33,7 @@ channel_ids = [
     'UC-lHJZR3Gqxm24_Vd_AJ5Yw', 'UCnQC_G5Xsjhp9fEJKuIcrSw', 'UCzQUP1qoWDoEbmsQxvdjxgQ',
 ]
 
-current = datetime.datetime.utcnow()
+current = datetime.utcnow() - timedelta(days=2)  # 0 = today, 1 = yesterday, 7 = last week etc.
 date = current.isoformat("T") + "Z"  # youtube 'publishedAt' time format
 counter = 0
 
@@ -55,7 +55,7 @@ def authorize():
     store = file.Storage('cred.json')
     credentials = store.get()
     if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets('INSERT_CLIENT.json', scopes)
+        flow = client.flow_from_clientsecrets('INSERT_CLIENT_PATH.json', scopes)
         credentials = tools.run_flow(flow, store)
     try:
         youtube = build('youtube', 'v3', http=credentials.authorize(Http()))
@@ -76,19 +76,23 @@ def get_channel_ids(channel_names):
 
 
 def get_videos(channel_ids, video_count):
-
+    global date
     video_ids = []
     for i in range(video_count):
         for channel in channel_ids:
             request = requests.get(
                 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=%s&maxResults=%s&order=date&type=video&key=%s&publishedAfter=%s' % (
                     channel, video_count, API_KEY, date)).json()
-            if request['error']:
+            print(request)
+            if 'dailyUsageLimit' in json.dumps(request):
                 print(json.dumps(request, indent=2) + '\n\nExiting...')
                 time.sleep(5)
                 sys.exit(0)
             else:
-                video_ids.append(request['items'][i]['id']['videoId'])
+                try:
+                    video_ids.append(request['items'][i]['id']['videoId'])
+                except Exception as error:
+                    print(error)
     return video_ids
 
 
