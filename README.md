@@ -22,7 +22,7 @@ Then, a client ID and API key will be needed, which can be created in the Google
 
 ## Usage
 
-Once the necessary credentials have been fed in, run the script once to authorize and store the necessary tokens for permeanenet authorization. Then, simply add your channel IDs and the playlist ID and run the script. 
+Once the necessary credentials have been fed in, run the script once to authorize the user and store the necessary tokens for permanent authorization. Then, simply add your channel IDs and the playlist ID and run the script. 
 
 **IMPORTANT:** The channels can also be retrieved through the channel name rather than the channel ID, but this spends on the daily usage limit imposed by Google since it uses requests to lookup the channel name and change it to an ID. Because of this, it is better to simply feed in the channel ID. For channels with custom URLs (no ID in the URL), use this link - http://johnnythetank.github.io/youtube-channel-name-converter/
 
