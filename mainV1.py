@@ -45,13 +45,13 @@ def main():
     channels = get_channel_ids(channel_names)  
     videos = get_videos(channels, 2)
     """
-    videos = get_videos(channel_ids, 5)
+    videos = get_videos(channel_ids, 3)
     add_to_playlist(videos)
 
 
 def authorize():
     global youtube
-    scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+    scopes = ["https://www.googleapis.com/auth/youtube"]
     store = file.Storage('cred.json')
     credentials = store.get()
     if not credentials or credentials.invalid:
@@ -84,15 +84,15 @@ def get_videos(channel_ids, video_count):
                 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=%s&maxResults=%s&order=date&type=video&key=%s&publishedAfter=%s' % (
                     channel, video_count, API_KEY, date)).json()
             print(request)
-            if 'dailyUsageLimit' in json.dumps(request):
+            if 'quotaExceeded' in json.dumps(request):
                 print(json.dumps(request, indent=2) + '\n\nExiting...')
                 time.sleep(5)
                 sys.exit(0)
             else:
                 try:
                     video_ids.append(request['items'][i]['id']['videoId'])
-                except Exception as error:
-                    print(error)
+                except IndexError:
+                    continue
     return video_ids
 
 
