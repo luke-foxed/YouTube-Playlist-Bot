@@ -83,7 +83,6 @@ def get_videos(channel_ids, video_count):
             request = requests.get(
                 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=%s&maxResults=%s&order=date&type=video&key=%s&publishedAfter=%s' % (
                     channel, video_count, API_KEY, date)).json()
-            print(request)
             if 'quotaExceeded' in json.dumps(request):
                 print(json.dumps(request, indent=2) + '\n\nExiting...')
                 time.sleep(5)
